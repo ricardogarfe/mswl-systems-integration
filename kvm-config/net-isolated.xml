@@ -1,0 +1,6 @@
+<network>
+  <name>isolated</name>
+  <bridge name="virbr11" />
+  <ip address="10.10.10.1" netmask="255.255.255.0">
+  </ip>
+</network>
