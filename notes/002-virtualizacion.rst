@@ -121,7 +121,7 @@ Multiplexación de un recurso físico. Popek y Goldberg:
 Conceptos Básicos
 ------------------
 
-**Anfitrión (host)**: El sistema operativo que ejecuta el software de virtualización. El anfitrión controla el hasrdware real.
+**Anfitrión (host)**: El sistema operativo que ejecuta el software de virtualización. El anfitrión controla el hardware real.
 **Invitado (guest)**: Sistema operativo virtualizado. No deben interferir entre ellos ni con el anfitrión. Aislamiento.
 
 Software:
@@ -228,23 +228,97 @@ Mostrar la configuración xml del volúmen del pool:
 
 Disco duro `/dev/vda` (v por virtual).
 
+Redes
+------
 
+Entrar en la consola virsh:
 
+    $ sudo virsh
+    virsh # net-list --all
+    Nombre               Estado     Inicio automático
+    -----------------------------------------
+    default              activo     si        
 
+Se ha de crear un xml para la configuración.
 
+Definir la red nat:
 
+    virsh # net-define /home/ricardo/projects/git/mswl/mswl-systems-integration/tools/kvm-config/net-nat.xml
+    virsh # net-start nat
+    virsh # net-destroy default
+    virsh # net-autostart --disable default
 
+Máquina virtual en XML 'vm01.xml':
 
+    <domain type='kvm'>
+      <name>vm01</name>
+      <memory unit='MiB'>1024</memory>
+      <vcpu>1</vcpu>
+      <os>
+        <type arch='x86_64'>hvm</type>
+        <boot dev='cdrom'/>
+        <boot dev='hd'/>
+      </os>
+      <features>
+        <acpi/>
+        <apic/>
+      </features>
+      <devices>
+        <emulator>/usr/bin/kvm</emulator>
+        <disk type='file' device='disk'>
+          <source file='/var/lib/libvirt/mypool/vm01.img' />
+          <target dev='vda' bus='virtio' />
+        </disk>
+        <disk type='file' device='cdrom'>
+          <driver name='qemu' type='raw'/>
+          <source file='/home/ricardo/projects/git/mswl/mswl-systems-integration/tools/ubuntu-12.10-server-amd64.iso'/>
+          <target dev='hdc' bus='ide'/>
+        </disk>
+        <interface type='network'>
+          <source network='nat' />
+        </interface>
+        <graphics type='vnc' port='-1' />
+      </devices>
+    </domain>
 
+Definir la máquina:
 
+    define /home/ricardo/projects/git/mswl/mswl-systems-integration/tools/kvm-config/vm01.xml
 
+Comprobar que está definida:
 
+    virsh # list --all
+     Id Nombre               Estado
+    ----------------------------------
+      - vm01                 apagado
 
+Iniciar la máquina virtual:
 
+    virsh # start vm01
+    Se ha iniciado el dominio vm01
 
+Para recargar la definición:
 
+    virsh # undefine vm01
 
+Sacar el cd:
 
+    virsh # change-media vm01 hdc --eject
+
+Logs de libvirt en el directorio '/var/log/libvirt/qemu/'.
+
+Discos duros
+-------------
+
+A través de virsh y una configuración xml:
+    
+    virsh # attach-device vm01 disk.xml
+
+Dispositivo externo:
+
+    virsh # attach-disk vm01 7var/lib/libvirt/mydata/vm01-data.img --target vdb --config
+
+Definir en fstab para que se inicialice automáticamente.
 
 
 
