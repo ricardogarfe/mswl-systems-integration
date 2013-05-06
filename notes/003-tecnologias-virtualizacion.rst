@@ -63,32 +63,8 @@ Hypervisor kvm y más, incluso privativos como vmware y uno de microsoft.
 Utiliza estándares abiertos.
 Compatibilidad mediante la API pública.
 
+OCCI
+-----
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Estandar API.
 

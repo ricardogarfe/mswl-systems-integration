@@ -14,7 +14,7 @@
   <devices>
     <emulator>/usr/bin/kvm</emulator>
     <disk type='file' device='disk'>
-      <source file='/var/lib/libvirt/mypool/vm01.img' />
+      <source file='/var/lib/libvirt/mypool01/vm01.img' />
       <target dev='vda' bus='virtio' />
     </disk>
     <disk type='file' device='cdrom'>
@@ -23,6 +23,7 @@
       <target dev='hdc' bus='ide'/>
     </disk>
     <interface type='network'>
+      <model type='virtio' />
       <source network='nat' />
     </interface>
     <graphics type='vnc' port='-1' />

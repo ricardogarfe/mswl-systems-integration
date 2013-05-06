@@ -271,7 +271,7 @@ Máquina virtual en XML 'vm01.xml':
         </disk>
         <disk type='file' device='cdrom'>
           <driver name='qemu' type='raw'/>
-          <source file='/home/ricardo/projects/git/mswl/mswl-systems-integration/tools/ubuntu-12.10-server-amd64.iso'/>
+          <source file='/home/ricardo/tmp/ubuntu-12.10-server-amd64.iso'/>
           <target dev='hdc' bus='ide'/>
         </disk>
         <interface type='network'>

@@ -1,0 +1,62 @@
+1,5c1,5
+< <domain type='kvm' id='7'>
+<   <name>vm01</name>
+<   <uuid>6233d9dd-ce9f-4fc4-a2e8-604618269409</uuid>
+<   <memory>1024</memory>
+<   <currentMemory>1024</currentMemory>
+---
+> <domain type='kvm' id='5'>
+>   <name>vm02</name>
+>   <uuid>8ee00dab-af27-22dd-e38e-a42c47182141</uuid>
+>   <memory>1048576</memory>
+>   <currentMemory>1048576</currentMemory>
+9d8
+<     <boot dev='cdrom'/>
+14a14
+>     <pae/>
+19c19
+<   <on_crash>destroy</on_crash>
+---
+>   <on_crash>restart</on_crash>
+27c27
+<       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+---
+>       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+29c29
+<     <disk type='file' device='cdrom'>
+---
+>     <disk type='block' device='cdrom'>
+31d30
+<       <source file='/tmp/ubuntu-12.10-server-amd64.iso'/>
+42c41
+<       <mac address='52:54:00:e8:de:a4'/>
+---
+>       <mac address='52:54:00:09:54:f3'/>
+44a44
+>       <model type='virtio'/>
+47a48,57
+>     <serial type='pty'>
+>       <source path='/dev/pts/6'/>
+>       <target port='0'/>
+>       <alias name='serial0'/>
+>     </serial>
+>     <console type='pty' tty='/dev/pts/6'>
+>       <source path='/dev/pts/6'/>
+>       <target type='serial' port='0'/>
+>       <alias name='serial0'/>
+>     </console>
+49a60,63
+>     <sound model='ich6'>
+>       <alias name='sound0'/>
+>       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+>     </sound>
+57c71
+<       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+---
+>       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+61,62c75,76
+<     <label>libvirt-6233d9dd-ce9f-4fc4-a2e8-604618269409</label>
+<     <imagelabel>libvirt-6233d9dd-ce9f-4fc4-a2e8-604618269409</imagelabel>
+---
+>     <label>libvirt-8ee00dab-af27-22dd-e38e-a42c47182141</label>
+>     <imagelabel>libvirt-8ee00dab-af27-22dd-e38e-a42c47182141</imagelabel>
