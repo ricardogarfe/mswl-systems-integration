@@ -1,0 +1,87 @@
+
+# virsh
+
+Pool Create:
+
+cd /var/lib/libvirt/
+
+pool-define (persistent pool with XML file)
+pool-define-as --name mypool --type dir --target /var/lib/libvirt/mypool
+
+pool-list mypool
+
+pool-start mypool
+
+===
+
+vol-create (persistent volume)
+
+vol-create-as --pool mypool --name vm01.img --capacity 3G --allocation 3G --format raw
+
+http://libvirt.org/storage.html
+
+vol-dumpxml vm01.img --pool mypool
+
+===
+
+NETWORK:
+
+libvirt.org/archnetwork.html
+
+# virsh
+
+net-list --all
+
+help net-define
+
+# Define persistente pero no la inicia
+net-define /home/dgamez/Documents/URJC/System\ Integration/kvm-files/net-isolated.xml
+
+net-start network1
+
+# Fuera de virsh
+brctl show
+
+===
+
+KVM MV Creation:
+
+# virsh (requiere XML)
+create /home/dgamez/Documents/URJC/System\ Integration/kvm-files/vm01.xml
+
+# virt-install (no requiere XML)
+
+# VNC: virt-viewer
+
+Este es el punto de montaje para el LVM LV del RAID:
+/var/lib/libvirt/mypool 	(datapool)
+
+En la creación de la MV debe generarse el fichero .img:
+/var/lib/libvirt/mypool/vm01.img
+
+# Para acceder vía VNC:
+virt-viewer vm01
+
+
+# To eject Media
+# virsh
+change-media vm01 hdc --eject
+
+
+http://www.centos.org/docs/5/html/5.2/Virtualization/chap-Virtualization-Managing_guests_with_virsh.html
+
+
+Agregar nuevo disco a la MV:
+
+# virsh 
+attach-device vm01 disk.xml
+
+(--config makes it permanent)
+(mydata es otro pool)
+(vdb es el prefijo del dispositivo dentro de la MV)
+attach-disk vm01 /var/lib/libvirt/mydata/vm01-data.img --target vdb --config
+
+
+Connect to a remote hypervisor:
+# virsh -c qemu+ssh://host.domain.com:220001/system
+

@@ -1,0 +1,106 @@
+
+KVM
+
+http://www.howtoforge.com/virtualization-with-kvm-on-an-opensuse-12.1-server
+
+http://www.techotopia.com/index.php/Managing_KVM_on_RHEL_6_using_the_virsh_Command-line_Tool
+
+LVM based GUEST:
+http://www.howtoforge.com/virtualization-with-kvm-on-an-opensuse-12.1-server-p5
+
+IPTABLES FORWARDING:
+http://wiki.libvirt.org/page/Networking
+
+FreeNAS ISO:
+/var/lib/libvirt/images/FreeBSD-9.1-RELEASE-amd64-disc1.iso
+
+
+egrep '(vmx|svm)' /proc/cpuinfo
+
+Add user to 'libvirtd' group in the host.
+
+
+======================================
+# GUEST MANAGEMENT
+======================================
+
+Listing Guest System Status:
+# virsh list
+
+Starting a Guest System:
+# virsh start guestName
+
+Connecting to a Running Guest System:
+# vncviewer
+(server) localhost:5900
+
+# virsh vncdisplay guestName
+:4
+
+Shutting Down a Guest System:
+# virsh shutdown guestName
+
+Stop a Guest System:
+# virsh destroy guestName
+
+Suspend a Guest System:
+# virsh suspend guestName
+
+Resume a Guest System:
+virsh resume guestName
+
+Reboot a Guest System:
+# virsh reboot guestName
+
+======================================
+# NETWORK
+http://libvirt.org/sources/virshcmdref/html/sect-net-define.html
+http://libvirt.org/formatnetwork.html#examplesNAT
+======================================
+
+Define virtual network:
+virsh -c qemu:///system net-define /usr/share/libvirt/networks/default.xml
+
+List virtual networks:
+virsh -c qemu:///system net-list --all
+
+Disable a virtual network:
+# virsh -c qemu:///system net-destroy network1
+# virsh -c qemu:///system net-undefine default
+# service libvirtd restart
+
+Start virtual network:
+# virsh -c qemu:///system net-start network1
+
+Check libvirt network devices:
+# brctl show
+
+Dump virtual device configuration:
+# virsh -c qemu:///system net-dumpxml network1
+<network>
+  <name>network1</name>
+  <uuid>ba3061ec-48d3-ff75-5845-5d9d595bba87</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0' />
+  <mac address='52:54:00:E1:EA:9F'/>
+  <ip address='10.0.0.254' netmask='255.255.255.0'>
+  </ip>
+</network>
+
+Enable automatic virtual network start:
+virsh -c qemu:///system net-autostart network1
+
+Disable automatic virtual network start:
+virsh -c qemu:///system net-autostart network1 --disable
+
+Enable Host IP Forward:
+sysctl -w net.ipv4.ip_forward=1
+(or) echo 1 > /proc/sys/net/ipv4/ip_forward
+
+======================================
+# GUEST INSTALL
+======================================
+
+1. 
+virt-install --connect qemu:///system -n os1 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool/vm01.img,size=5 -c /var/lib/libvirt/images/FreeBSD-9.1-RELEASE-amd64-disc1.iso --vnc --noautoconsole --os-type unix --os-variant freebsd8 --accelerate -v --network network:network1 --hvm
+

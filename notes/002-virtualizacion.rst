@@ -321,9 +321,16 @@ Dispositivo externo:
 Definir en fstab para que se inicialice automáticamente.
 
 
+Definir la Máquina virst-install
+---------------------------------
+
+Funciona correctamente sin errores con el comando:
+
+    virt-install --connect qemu:///system -n vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool01/vm01.img,size=2 -c /home/ricardo/tmp/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type unix --accelerate -v --network network:nat --hvm --force
 
 
 
+Nueva prueba:
 
-
+    virt-install --connect qemu:///system -n os01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/images/os01/os01.img -c /var/lib/libvirt/images/FreeBSD-9.1-RELEASE-amd64-disc1.iso --vnc --noautoconsole --os-type unix --os-variant freebsd8 --accelerate -v --network network:network1 --hvm
 
