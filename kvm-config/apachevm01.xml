@@ -1,0 +1,33 @@
+<domain type='kvm'>
+  <name>apachevm01</name>
+  <memory unit='MiB'>1024</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev='cdrom'/>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/kvm</emulator>
+    <disk type='file' device='disk'>
+      <source file='/var/lib/libvirt/final/ws01-install/vm01.img' />
+      <target dev='vda' bus='virtio' />
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <alias name='ide0-1-0'/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <interface type='network'>
+      <source network='nat' />
+    </interface>
+    <graphics type='vnc' port='-1' />
+  </devices>
+</domain>
