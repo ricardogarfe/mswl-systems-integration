@@ -50,7 +50,7 @@ Ejercicio
 
 Un dispositivo virtual, raid, devices y dirección:
 
-    mdadm --create /dev/md0 --level=raid1 --raid-devices=2 /dev/sdb/ /dev/sdc
+    mdadm --create /dev/md0 --level=raid1 --raid-devices=2 /dev/sdc/ /dev/sdd/
 
 Resultado por consola:
 

@@ -196,14 +196,17 @@ Crear el pool dentro de la consola de `virsh`:
 
     virsh # pool-define-as --name mypool --type dir --target /var/lib/libvirt/mypool/
     Se ha definido el grupo mypool
+    virsh # pool-define-as --name mypool01 --type dir --target /var/lib/libvirt/mypool01/
+    Se ha definido el grupo mypool
 
 Arrancar el pool:
 
     virsh # pool-start mypool
+    virsh # pool-start mypool01
 
 Volúmenes, crear el volúmen vm01.img (vol-create siempre persistente) para la máquina virtual:
 
-    virsh # vol-create-as --pool mypool --name vm01.img --capacity 5G --allocation 5G --format raw
+    virsh # vol-create-as --pool mypool01 --name vm01.img --capacity 3G --allocation 3G --format raw
 
 Mostrar la configuración xml del volúmen del pool:
 
@@ -326,9 +329,11 @@ Definir la Máquina virst-install
 
 Funciona correctamente sin errores con el comando:
 
-    virt-install --connect qemu:///system -n vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool01/vm01.img,size=2 -c /home/ricardo/tmp/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type unix --accelerate -v --network network:nat --hvm --force
+    virt-install --connect qemu:///system -n vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool01/vm01.img -c /home/ricardo/tmp/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
 
+OpenSuse:
 
+    virt-install --connect qemu:///system -n vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool01/vm01.img -c /home/ricardo/tmp/openSUSE-12.3-NET-x86_64.iso --vnc --noautoconsole --os-type linux --os-variant opensuse12 --accelerate -v --network network:nat --hvm --force
 
 Nueva prueba:
 
