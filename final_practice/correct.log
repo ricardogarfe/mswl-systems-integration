@@ -1,0 +1,37 @@
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.063055] sd 6:0:0:0: [sdb] Mode Sense: 43 00 00 00
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.063850] sd 6:0:0:0: [sdb] No Caching mode page present
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.063858] sd 6:0:0:0: [sdb] Assuming drive cache: write through
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.067624] sd 6:0:0:0: [sdb] No Caching mode page present
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.067632] sd 6:0:0:0: [sdb] Assuming drive cache: write through
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.068438]  sdb: sdb1
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.069852] sd 6:0:0:0: [sdb] No Caching mode page present
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.069855] sd 6:0:0:0: [sdb] Assuming drive cache: write through
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.069858] sd 6:0:0:0: [sdb] Attached SCSI removable disk
+May 14 04:39:41 ricardo-ubuntu kernel: [   81.105304] md: bind<sdb>
+May 14 04:39:51 ricardo-ubuntu kernel: [   90.947779] iwlwifi 0000:04:00.0: Tx aggregation enabled on ra = 38:72:c0:4a:e8:fd tid = 6
+May 14 04:39:52 ricardo-ubuntu kernel: [   91.669876] usb 2-1.3: new high-speed USB device number 3 using ehci_hcd
+May 14 04:39:52 ricardo-ubuntu mtp-probe: checking bus 2, device 3: "/sys/devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.3"
+May 14 04:39:52 ricardo-ubuntu kernel: [   91.767281] scsi7 : usb-storage 2-1.3:1.0
+May 14 04:39:52 ricardo-ubuntu mtp-probe: bus: 2, device: 3 was not an MTP device
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.767306] scsi 7:0:0:0: Direct-Access     2.0                       5.00 PQ: 0 ANSI: 2
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.768935] sd 7:0:0:0: Attached scsi generic sg3 type 0
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.769358] sd 7:0:0:0: [sdc] 16199680 512-byte logical blocks: (8.29 GB/7.72 GiB)
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.770269] sd 7:0:0:0: [sdc] Write Protect is off
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.770275] sd 7:0:0:0: [sdc] Mode Sense: 0b 00 00 08
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.771328] sd 7:0:0:0: [sdc] No Caching mode page present
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.771333] sd 7:0:0:0: [sdc] Assuming drive cache: write through
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.774200] sd 7:0:0:0: [sdc] No Caching mode page present
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.774208] sd 7:0:0:0: [sdc] Assuming drive cache: write through
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.774934]  sdc: sdc1
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.777909] sd 7:0:0:0: [sdc] No Caching mode page present
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.777917] sd 7:0:0:0: [sdc] Assuming drive cache: write through
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.777923] sd 7:0:0:0: [sdc] Attached SCSI removable disk
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.813814] md: bind<sdc>
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.816930] bio: create slab <bio-1> at 1
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.817066] md/raid1:md1: active with 2 out of 2 mirrors
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.817091] md1: detected capacity change from 0 to 8015249408
+May 14 04:39:53 ricardo-ubuntu mdadm[2769]: SparesMissing event detected on md device /dev/md1
+May 14 04:39:53 ricardo-ubuntu kernel: [   92.817606]  md1: p1 p2
+
+
+
