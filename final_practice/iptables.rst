@@ -4,12 +4,14 @@ Port Forwarding
 ip:
 
     * iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 80 -j DNAT --to-destination 192.168.122.80:80
-
     * iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 22001 -j DNAT --to-destination 192.168.122.80:22
-
     * iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 22002 -j DNAT --to-destination 192.168.122.81:22
-
     * iptables -I FORWARD -m state -d 192.168.122.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
+
+Allow connection to ports 22001 and 22002:
+
+    * iptables -A INPUT -i wlan0 -p tcp --dport 22001 -j ACCEPT
+    * iptables -A INPUT -i wlan0 -p tcp --dport 22002 -j ACCEPT
 
 eth0:
 
@@ -26,11 +28,20 @@ wlan0:
 
 iptables-save
 
+comprobar tráfico puerto 80
+----------------------------
+
+tcpdump -i virbr10 host 192.168.122.80
+
 SSH
 ----
 
 # iptables -I FORWARD -m state -d 192.168.122.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
-# iptables -t nat -I PREROUTING -p tcp --dport 2222 -j DNAT --to-destination 192.168.122.80:2222
+# iptables -t nat -I PREROUTING -p tcp --dport 22001 -j DNAT --to-destination 192.168.122.80:22
+
+ssh -p 1234 user@sshserver
+
+ssh -p 22001 vm01@192.168.1.39
 
 Delete rules
 =============
