@@ -7,7 +7,8 @@ Notes and Exercises for Systems Integration Subject coursed in [Master on Libre 
 
 # Requirements
 
-* Linux distribution
+* Linux distribution.
+* two USB with 8G.
 
 # Final practice
 
@@ -50,13 +51,12 @@ Create a wiki with all documentation extracted from `final_practice` folder in r
 
 ```shell
 final_practice/
-├── 001-logical-disc-layer.rst
-├── 002-virtualizacion.rst
-├── fstab.rst
-├── iptables.rst
-├── secure-apache-ssl.rst
-├── storage-devices.rst
-└── wordpress-mysql-server.rst
+├── 001-logical-disc-layer.md
+├── 002-virtualizacion.md
+├── 003-wordpress-mysql-server.md
+├── 004-secure-apache-ssl.md
+├── 005-iptables.md
+└── 006-fstab.md
 ```
 
 Wiki [Systems Integration Documentation](https://github.com/ricardogarfe/mswl-systems-integration/wiki).
