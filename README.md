@@ -24,7 +24,7 @@ System Architecture:
 
 ![Host Guest Virtualization](https://raw.github.com/ricardogarfe/mswl-systems-integration/master/images/final_practice.png)
 
-Network Architecture: Linux Host (Dom-0) will have a private IP (at your choice). Virtual Machines will be inside a private subnet (10.0.0.0/8) not accessed from outside the network.
+Network Architecture: Linux Host (Dom-0) will have a private IP (at your choice). Virtual Machines will be inside a private subnet not accessed from outside the network.
 
 Summarizing, with this practice we will have the following platform:
 * Host (Dom-0):  private ip, Xen/KVM server (192.168.122.1) with Linux (such as Debian/Ubuntu)
