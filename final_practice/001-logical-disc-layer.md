@@ -2,12 +2,60 @@
 
 Este proceso se ha de hacer en modo `sudo`.
 
+## Configurar disco
+
+Iniciar **fdisk** en el nuevo dispositivo USB:
+
+```shell
+$ fdisk /dev/sdc
+Command (m for help):
+Type n for a new partition.
+The following appears:
+Command action
+e   extended
+p   primary partition (1-4)
+Type p for a primary partition.
+Choose an available partition number. In this example, the first partition is chosen by entering 1.
+Partition number (1-4): 1
+Enter the default first cylinder by pressing Enter.
+First cylinder (1-400, default 1):
+Select the size of the partition. In this example the entire disk is allocated by pressing Enter.
+Last cylinder or +size or +sizeM or +sizeK (2-400, default 400):
+Enter t to configure the partition type.
+Command (m for help): t
+Select the partition you created in the previous steps. In this example, the partition number is 1 as there was only one partition created and fdisk automatically selected partition 1.
+Partition number (1-4): 1
+Enter 83 for a Linux partition.
+Hex code (type L to list codes): 83
+Enter w to write changes and quit.
+Command (m for help): w
+```
+
+Format the new partition with the `ext4` file system.
+
+```shell
+$ mkfs.ext4 /dev/sdc1
+```
+
+Crear un directorio como punto de montaje para el disco:
+
+```shell
+$ mkdir /myfiles
+$ mount /dev/sdc1 /myfiles
+```
+
+The guest now has an additional virtualized file-based storage device. Note however, that this storage will not mount persistently across reboot unless defined in the guest's `/etc/fstab` file:
+
+```shell
+/dev/vdb1    /myfiles    ext3     defaults    0 0
+```
+
 ## RAID-1
 
 Un dispositivo virtual, raid, devices y dirección:
 
 ```shell
-# mdadm --create /dev/md1 --level=raid1 --raid-devices=2 /dev/sdc /dev/sde
+$ mdadm --create /dev/md1 --level=raid1 --raid-devices=2 /dev/sdc /dev/sde
 ```
 
 Resultado por consola:
@@ -117,7 +165,7 @@ Desmontar el RAID:
 Montar el RAID:
 
 ```shell
-root@ricardo-ubuntu:/mnt# mdadm --examine /dev/sdd
+/mnt# mdadm --examine /dev/sdd
 /dev/sdd:
           Magic : a92b4efc
         Version : 1.2
@@ -148,8 +196,8 @@ root@ricardo-ubuntu:/mnt# mdadm --examine /dev/sdd
 Assemble:
 
 ```shell
-root@ricardo-ubuntu:/mnt# mdadm /dev/md1 --assemble -u 414cf565-4aa4-4148-a12a-c79b02ed332f
-mdadm: /dev/md1 has been started with 2 drives.
+$ mdadm /dev/md1 --assemble -u 414cf565-4aa4-4148-a12a-c79b02ed332f
+$ mdadm: /dev/md1 has been started with 2 drives.
 ```
 
 ### Escribir en la tabla
@@ -157,7 +205,7 @@ mdadm: /dev/md1 has been started with 2 drives.
 Escribir en en fichero de mdadm:
 
 ```shell
-root@ricardo-ubuntu:/mnt# mdadm --detail --scan >> /etc/mdadm/mdadm.conf 
+$ mdadm --detail --scan >> /etc/mdadm/mdadm.conf 
 ```
 
 ## Crear Volúmenes Lógicos
@@ -165,7 +213,7 @@ root@ricardo-ubuntu:/mnt# mdadm --detail --scan >> /etc/mdadm/mdadm.conf
 ### Formatear usb
 
 ```shell
-mkfs.ext4 /dev/sdc1
+$ mkfs.ext4 /dev/sdc1
 ```
 
 ### Volumen físico
@@ -173,65 +221,64 @@ mkfs.ext4 /dev/sdc1
 Dos volúmenes físicos.
 
 ```shell
-# pvcreate /dev/md1p1
-# pvcreate /dev/md1p2
-# umount !$
-# pvdisplay
+$ pvcreate /dev/md1p1
+$ pvcreate /dev/md1p2
+$ pvdisplay
 ```
 
 ### Grupos de volúmenes
 
 ```shell
-# vgcreate ws01 /dev/md1p1
-# vgcreate db01 /dev/md1p2
-# vgdisplay 
+$ vgcreate ws01 /dev/md1p1
+$ vgcreate db01 /dev/md1p2
+$ vgdisplay 
 ```
 
 ### Volúmenes Lógicos
 
 ```shell
-# lvcreate -L2500M -n ws01-install ws01
-# lvcreate -L200M -n ws01-www ws01
-# lvcreate -L2500M -n db01-install db01
-# lvcreate -L200M -n db01-mysql db01
+$ lvcreate -L2500M -n ws01-install ws01
+$ lvcreate -L200M -n ws01-www ws01
+$ lvcreate -L2500M -n db01-install db01
+$ lvcreate -L200M -n db01-mysql db01
 ```
 
 ### Sistema de archivos
 
 ```shell
-# mkfs.ext4 /dev/ws01/ws01-install
-# mkfs.ext4 /dev/ws01/ws01-www
-# mkfs.ext4 /dev/db01/db01-install
-# mkfs.ext4 /dev/db01/db01-mysql
-# pvdisplay
+$ mkfs.ext4 /dev/ws01/ws01-install
+$ mkfs.ext4 /dev/ws01/ws01-www
+$ mkfs.ext4 /dev/db01/db01-install
+$ mkfs.ext4 /dev/db01/db01-mysql
+$ pvdisplay
 ```
 
 ## Montar
 
 ```shell
-# mkdir -p /var/lib/libvirt/final-raid/ws01-install/
-# mount /dev/ws01/ws01-install /var/lib/libvirt/final-raid/ws01-install/
-# mkdir -p /var/lib/libvirt/final-raid/ws01-www/
-# mount /dev/ws01/ws01-www /var/lib/libvirt/final-raid/ws01-www/
+$ mkdir -p /var/lib/libvirt/final-raid/ws01-install/
+$ mount /dev/ws01/ws01-install /var/lib/libvirt/final-raid/ws01-install/
+$ mkdir -p /var/lib/libvirt/final-raid/ws01-www/
+$ mount /dev/ws01/ws01-www /var/lib/libvirt/final-raid/ws01-www/
 
-# mkdir -p /var/lib/libvirt/final-raid/db01-install/
-# mount /dev/db01/db01-install /var/lib/libvirt/final-raid/db01-install/
-# mkdir -p /var/lib/libvirt/final-raid/db01-mysql/
-# mount /dev/db01/db01-mysql /var/lib/libvirt/final-raid/db01-mysql/
+$ mkdir -p /var/lib/libvirt/final-raid/db01-install/
+$ mount /dev/db01/db01-install /var/lib/libvirt/final-raid/db01-install/
+$ mkdir -p /var/lib/libvirt/final-raid/db01-mysql/
+$ mount /dev/db01/db01-mysql /var/lib/libvirt/final-raid/db01-mysql/
 ```
 
 ## Resize
 
 ```shell
-root@ricardo-ubuntu:/var/lib/libvirt/final# lvextend -L+500M /dev/vg001/ws01-install 
+$ lvextend -L+500M /dev/vg001/ws01-install 
   Extending logical volume ws01-install to 2,25 GiB
   Logical volume ws01-install successfully resized
 
-root@ricardo-ubuntu:/var/lib/libvirt/final# resize2fs /dev/vg001/ws01-install
+$ resize2fs /dev/vg001/ws01-install
 resize2fs 1.42 (29-Nov-2011)
 Por favor ejecute antes 'e2fsck -f /dev/vg001/ws01-install'.
 
-root@ricardo-ubuntu:/var/lib/libvirt/final# e2fsck -f /dev/vg001/ws01-install
+$ e2fsck -f /dev/vg001/ws01-install
 e2fsck 1.42 (29-Nov-2011)
 Paso 1: Verificando nodos-i, bloques y tamaños
 Paso 2: Verificando la estructura de directorios
@@ -240,7 +287,7 @@ Paso 4: Revisando las cuentas de referencia
 Paso 5: Revisando el resumen de información de grupos
 /dev/vg001/ws01-install: 11/115200 files (0.0% non-contiguous), 16121/460800 blocks
 
-root@ricardo-ubuntu:/var/lib/libvirt/final# resize2fs /dev/vg001/ws01-install
+$ resize2fs /dev/vg001/ws01-install
 resize2fs 1.42 (29-Nov-2011)
 Resizing the filesystem on /dev/vg001/ws01-install to 588800 (4k) blocks.
 The filesystem on /dev/vg001/ws01-install is now 588800 blocks long.

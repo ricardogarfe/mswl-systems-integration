@@ -91,6 +91,19 @@ default              activo     si
 
 Se ha de crear un xml para la configuración.
 
+```xml
+<network>
+  <name>nat</name>
+    <bridge name="virbr10" />
+    <forward mode="nat"/>
+    <ip address="192.168.122.1" netmask="255.255.255.0">
+      <dhcp>
+        <range start="192.168.122.100" end="192.168.122.254" />
+      </dhcp>
+    </ip>
+</network>
+```
+
 Definir la red nat:
 
 ```shell
@@ -104,8 +117,10 @@ virsh # net-autostart --disable default
 
 Funciona correctamente sin errores con el comando `virt-install`:
 
+* raid-vm01:
+
 ```shell
-# virt-install --connect qemu:///system -n raid-vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/ws01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+$ virt-install --connect qemu:///system -n raid-vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/ws01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
 ```
 
 Instalar a través de vnc:
@@ -114,10 +129,10 @@ Instalar a través de vnc:
 virt-viewer raid-vm01 &
 ```
 
-vm02:
+* raid-vm02:
 
 ```shell
-# virt-install --connect qemu:///system -n raid-vm02 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/db01-install/vm02.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+$ virt-install --connect qemu:///system -n raid-vm02 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/db01-install/vm02.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
 ```
 
 Instalar a través de vnc:
@@ -177,17 +192,17 @@ El disco /dev/vdb no contiene una tabla de particiones válida
 ```
 
 * Dar formato al disco:
-** fdisk /dev/vdb
 
-```shell    
-# configure new partition using 'n' option and 't' to define linux type '83'. And **w**.
-# mkfs.ext4 /dev/vdb1
+```shell
+fdisk /dev/vdb    
+$ configure new partition using 'n' option and 't' to define linux type '83'. And **w**.
+$ mkfs.ext4 /dev/vdb1
 ```
 
 * Montar el dispositivo:
 
 ```shell
-# mount /dev/vdb1 /var/www
+$ mount /dev/vdb1 /var/www
 ```
 
 * Definir en fstab para que se inicialice automáticamente mediante UUID con el comando **blkid**:
