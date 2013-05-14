@@ -1,178 +1,232 @@
-Virtualización
-===============
+## Pool
 
 Crear el pool dentro de la consola de `virsh`:
 
-    virsh # pool-define-as --name pool-ws01-install --type dir --target /var/lib/libvirt/final-raid/ws01-install/
-    virsh # pool-define-as --name pool-db01-install --type dir --target /var/lib/libvirt/final-raid/db01-install/
-
+```shell
+virsh # pool-define-as --name ws01-install --type dir --target /var/lib/libvirt/final-raid/ws01-install/
+virsh # pool-define-as --name db01-install --type dir --target /var/lib/libvirt/final-raid/db01-install/
+virsh # pool-define-as --name ws01-www --type dir --target /var/lib/libvirt/final-raid/ws01-www/
+virsh # pool-define-as --name db01-mysql --type dir --target /var/lib/libvirt/final-raid/db01-mysql/
+```
 
 Arrancar el pool:
 
-    virsh # pool-start pool-ws01-install
-    virsh # pool-start pool-db01-install
+```shell
+virsh # pool-start ws01-install
+virsh # pool-start db01-install
+virsh # pool-start ws01-www
+virsh # pool-start db01-mysql
+```
+
+## Volúmenes
 
 Volúmenes, crear el volúmen vm01.img (vol-create siempre persistente) para la máquina virtual:
 
-    virsh # vol-create-as --pool ws01-install --name vm01.img --capacity 1800M --allocation 1400M --format raw
-    virsh # vol-create-as --pool db01-install --name vm01.img --capacity 1800M --allocation 1400M --format raw
+```shell
+virsh # vol-create-as --pool ws01-install --name vm01.img --capacity 2200M --allocation 2200M --format raw
+virsh # vol-create-as --pool db01-install --name vm02.img --capacity 2200M --allocation 2200M --format raw
+virsh # vol-create-as --pool ws01-www --name vm01www.img --capacity 150M --allocation 150M --format raw
+virsh # vol-create-as --pool db01-mysql --name vm02mysql.img --capacity 150M --allocation 150M --format raw
+```
 
 Mostrar la configuración xml del volúmen del pool:
 
-    virsh # vol-dumpxml vm01.img --pool pool-ws01-install
-    <volume>
-      <name>vm01.img</name>
-      <key>/var/lib/libvirt/final/ws01-install/vm01.img</key>
-      <source>
-      </source>
-      <capacity>1468006400</capacity>
-      <allocation>1468010496</allocation>
-      <target>
-        <path>/var/lib/libvirt/final/ws01-install/vm01.img</path>
-        <format type='raw'/>
-        <permissions>
-          <mode>0600</mode>
-          <owner>0</owner>
-          <group>0</group>
-        </permissions>
-      </target>
-    </volume>
+* vm01:
 
-Disco duro `/dev/vda` (v por virtual).
+```xml
+virsh # vol-dumpxml vm01.img --pool ws01-install
+<volume>
+  <name>vm01.img</name>
+  <key>/var/lib/libvirt/final-raid/ws01-install/vm01.img</key>
+  <source>
+  </source>
+  <capacity>2097152000</capacity>
+  <allocation>2099204096</allocation>
+  <target>
+    <path>/var/lib/libvirt/final-raid/ws01-install/vm01.img</path>
+    <format type='raw'/>
+    <permissions>
+      <mode>0600</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</volume>
+```
 
-Redes
-------
+* vm02:
+
+```xml
+virsh # vol-dumpxml vm02.img --pool db01-install
+<volume>
+  <name>vm02.img</name>
+  <key>/var/lib/libvirt/final-raid/db01-install/vm02.img</key>
+  <source>
+  </source>
+  <capacity>2097152000</capacity>
+  <allocation>2099204096</allocation>
+  <target>
+    <path>/var/lib/libvirt/final-raid/db01-install/vm02.img</path>
+    <format type='raw'/>
+    <permissions>
+      <mode>0600</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</volume>
+```
+
+## Redes
 
 Entrar en la consola virsh:
 
-    $ sudo virsh
-    virsh # net-list --all
-    Nombre               Estado     Inicio automático
-    -----------------------------------------
-    default              activo     si        
+```shell
+$ sudo virsh
+virsh # net-list --all
+Nombre               Estado     Inicio automático
+-----------------------------------------
+default              activo     si        
+```
 
 Se ha de crear un xml para la configuración.
 
 Definir la red nat:
 
-    virsh # net-define /home/ricardo/projects/git/mswl/mswl-systems-integration/tools/kvm-config/net-nat.xml
-    virsh # net-start nat
-    virsh # net-destroy default
-    virsh # net-autostart --disable default
+```shell
+virsh # net-define /home/ricardo/projects/git/mswl/mswl-systems-integration/tools/kvm-config/net-nat.xml
+virsh # net-start nat
+virsh # net-destroy default
+virsh # net-autostart --disable default
+```
 
-Máquina virtual en XML 'vm01.xml':
+## Definir la Máquina virst-install
 
-    <domain type='kvm'>
-      <name>vm01</name>
-      <memory unit='MiB'>1024</memory>
-      <vcpu>1</vcpu>
-      <os>
-        <type arch='x86_64'>hvm</type>
-        <boot dev='cdrom'/>
-        <boot dev='hd'/>
-      </os>
-      <features>
-        <acpi/>
-        <apic/>
-      </features>
-      <devices>
-        <emulator>/usr/bin/kvm</emulator>
-        <disk type='file' device='disk'>
-          <source file='/var/lib/libvirt/mypool/vm01.img' />
-          <target dev='vda' bus='virtio' />
-        </disk>
-        <disk type='file' device='cdrom'>
-          <driver name='qemu' type='raw'/>
-          <source file='/home/ricardo/tmp/ubuntu-12.10-server-amd64.iso'/>
-          <target dev='hdc' bus='ide'/>
-        </disk>
-        <interface type='network'>
-          <source network='nat' />
-        </interface>
-        <graphics type='vnc' port='-1' />
-      </devices>
-    </domain>
+Funciona correctamente sin errores con el comando `virt-install`:
 
-Definir la máquina:
+```shell
+# virt-install --connect qemu:///system -n raid-vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/ws01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+```
 
-    define /home/ricardo/projects/git/mswl/mswl-systems-integration/tools/kvm-config/vm01.xml
+Instalar a través de vnc:
 
-Comprobar que está definida:
+```shell
+virt-viewer raid-vm01 &
+```
 
-    virsh # list --all
-     Id Nombre               Estado
-    ----------------------------------
-      - vm01                 apagado
+vm02:
 
-Iniciar la máquina virtual:
+```shell
+# virt-install --connect qemu:///system -n raid-vm02 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/db01-install/vm02.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+```
 
-    virsh # start vm01
-    Se ha iniciado el dominio vm01
+Instalar a través de vnc:
 
-Para recargar la definición:
+```shell
+virt-viewer raid-vm02 &
+```
 
-    virsh # undefine vm01
+### Discos duros
 
-Sacar el cd:
+Como Dispositivo externo después de haber creado las imágenes.
 
-    virsh # change-media vm01 hdc --eject
+* Parar las máquinas virtuales:
 
-Logs de libvirt en el directorio '/var/log/libvirt/qemu/'.
+```shell
+virsh # shutdown raid-vm01
+virsh # shutdown raid-vm02
+```
 
-Discos duros
--------------
+* Adjuntar el nuevo disco:
 
-A través de virsh y una configuración xml:
-    
-    virsh # attach-device vm01 disk.xml
+```shell
+virsh # attach-disk raid-vm01 /var/lib/libvirt/final-raid/ws01-www/vm01www.img --target vdb --persistent
+virsh # attach-disk raid-vm02 /var/lib/libvirt/final-raid/db01-mysql/vm02mysql.img --target vdb --persistent
+```
 
-Dispositivo externo:
+* Levantar las máquinas virtuales:
 
-    virsh # attach-disk vm01 /var/lib/libvirt/mydata/vm01-data.img --target vdb --config
+```shell
+virsh # start raid-vm01
+virsh # start raid-vm02
+```
 
-Definir en fstab para que se inicialice automáticamente.
+* Ejecutar el comando **fdisk -l** para comprobar que se ha iniciado correctamente:
 
-Definir la Máquina virst-install
----------------------------------
+```shell
+Disco /dev/vda: 2306 MB, 2306867200 bytes
+16 cabezas, 63 sectores/pista, 4469 cilindros, 4505600 sectores en total
+Unidades = sectores de 1 * 512 = 512 bytes
+Tamaño de sector (lógico / físico): 512 bytes / 512 bytes
+Tamaño E/S (mínimo/óptimo): 512 bytes / 512 bytes
+Identificador del disco: 0x00005919
 
-Funciona correctamente sin errores con el comando:
+Dispositivo Inicio    Comienzo      Fin      Bloques  Id  Sistema
+/dev/vda1   *        2048     3905535     1951744   83  Linux
+/dev/vda2         3907582     4503551      297985    5  Extendida
+/dev/vda5         3907584     4503551      297984   82  Linux swap / Solaris
 
-    # virt-install --connect qemu:///system -n apache-vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final/ws01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+Disco /dev/vdb: 157 MB, 157286400 bytes
+16 cabezas, 63 sectores/pista, 304 cilindros, 307200 sectores en total
+Unidades = sectores de 1 * 512 = 512 bytes
+Tamaño de sector (lógico / físico): 512 bytes / 512 bytes
+Tamaño E/S (mínimo/óptimo): 512 bytes / 512 bytes
+Identificador del disco: 0x00000000
 
-virt-viewer apache-vm01 &
+El disco /dev/vdb no contiene una tabla de particiones válida
+```
 
-    # virt-install --connect qemu:///system -n db-vm02 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final/db01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
+* Dar formato al disco:
+** fdisk /dev/vdb
 
-virt-viewer db-vm02 &
+```shell    
+# configure new partition using 'n' option and 't' to define linux type '83'. And **w**.
+# mkfs.ext4 /dev/vdb1
+```
 
-User/Password
---------------
+* Montar el dispositivo:
 
-ubuntuvm01
+```shell
+# mount /dev/vdb1 /var/www
+```
 
-    * vm01 vm01
+* Definir en fstab para que se inicialice automáticamente mediante UUID con el comando **blkid**:
+
+```shell
+root@ubuntuvm01:/home/vm01# blkid
+/dev/vda1: UUID="472e4de5-4e12-42e3-85b9-c815f5ceb8d0" TYPE="ext4" 
+/dev/vda5: UUID="65144bfe-9651-48f7-8ebb-6d8e3894ef37" TYPE="swap" 
+/dev/vdb1: UUID="62eb7abe-cd39-4150-8db2-4a12f7f6e74d" TYPE="ext4" 
+```
+
+* fstab:
+```shell
+UUID=472e4de5-4e12-42e3-85b9-c815f5ceb8d0 /               ext4    errors=remount-ro 0       1
+# swap was on /dev/vda5 during installation
+UUID=65144bfe-9651-48f7-8ebb-6d8e3894ef37 none            swap    sw              0       0
+UUID=62eb7abe-cd39-4150-8db2-4a12f7f6e74d	/var/www	ext4	defaults	0	0
+```
+
+## User/Password
+
+ubuntuvm01:
+
+* vm01 vm01
 
 ubuntuvm02:
 
-    * vm02 vm02
-
-OpenSuse
----------
-
-    virt-install --connect qemu:///system -n vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/mypool01/vm01.img -c /home/ricardo/tmp/openSUSE-12.3-NET-x86_64.iso --vnc --noautoconsole --os-type linux --os-variant opensuse12 --accelerate -v --network network:nat --hvm --force
-
-vm02 - vm02
-mysql - root - admin
+* vm02 vm02
 
 
-Virsh dominios
-----------------
+## Virsh dominios
 
 Apagar:
 
-    virsh # shutdown apachevm01
-    El dominio apachevm01 está siendo apagado
+```shell
+virsh # shutdown apachevm01
+El dominio apachevm01 está siendo apagado
 
-    virsh # shutdown db-vm02
-    El dominio db-vm02 está siendo apagado
+virsh # shutdown db-vm02
+El dominio db-vm02 está siendo apagado
+```
 
