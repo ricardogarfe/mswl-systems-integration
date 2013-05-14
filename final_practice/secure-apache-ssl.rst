@@ -21,7 +21,8 @@ Step Three—Create a Self Signed SSL Certificate
 
 When we request a new certificate, we can specify how long the certificate should remain valid by changing the 365 to the number of days we prefer. As it stands this certificate will expire after one year.
 
-    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
+    mkdir /etc/apache2/ssl/
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
 
 With this command, we will be both creating the self-signed SSL certificate and the server key that protects it, and placing both of them into the new directory.
 
