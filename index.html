@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mswl-systems-integration by ricardogarfe</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Mswl-systems-integration</h1>
+        <p class="header">Notes and exercises for Systems Integration Subject coursed in [Master on Libre Software (Master Universitario en Software libre](http://master.libresoft.es/) at [Universidad Rey juan Carlos](http://www.urjc.es/) — Read more</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/ricardogarfe/mswl-systems-integration/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/ricardogarfe/mswl-systems-integration/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/ricardogarfe/mswl-systems-integration">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/ricardogarfe">ricardogarfe</a></p>
+
+
+      </header>
+      <section>
+        <h1>MSWL Systems Integration</h1>
+
+<h1>Introduction</h1>
+
+<p>Notes and Exercises for Systems Integration Subject coursed in <a href="http://master.libresoft.es/">Master on Libre Software (Master Universitario en Software libre)</a> at <a href="http://www.urjc.es/">Universidad Rey juan Carlos</a>.</p>
+
+<h1>Requirements</h1>
+
+<ul>
+<li>Linux distribution</li>
+</ul><h1>Final practice</h1>
+
+<p>The Final Practice will intend to integrate a virtual platform with a CMS <strong>Wordpress</strong>. This CMS will require to install a web server (**Apache**) and a DB engine (**MySQL**) and some network tweaks.</p>
+
+<p>This platform will be deployed with a virtual structure: a Linux host (for instance your laptop) with <strong>KVM</strong> hypervisor, installed in <strong>NAT</strong> mode, allowing to deploy and to host two virtual machines <strong>VM</strong>:</p>
+
+<ul>
+<li>
+<code>Web Server</code> <strong>raid-vm01</strong>
+</li>
+<li>
+<code>Database</code> <strong>raid-vm01</strong>
+</li>
+</ul><p>Virtual Machine images will be hosted in a <strong>LVM</strong> from host.</p>
+
+<p>System Architecture:</p>
+
+<p><img src="https://raw.github.com/ricardogarfe/mswl-systems-integration/master/images/final_practice.png" alt="Host Guest Virtualization"></p>
+
+<p>Network Architecture: Linux Host (Dom-0) will have a private IP (at your choice). Virtual Machines will be inside a private subnet not accessed from outside the network.</p>
+
+<p>Summarizing, with this practice we will have the following platform:</p>
+
+<ul>
+<li>Host (Dom-0):  private ip, Xen/KVM server (192.168.122.1) with Linux (such as Debian/Ubuntu)</li>
+<li>
+<code>raid-vm01</code> (DomU): Services (Apache), private ip (192.168.122.80), public access to the ports <code>80</code> y <code>22001</code>.</li>
+<li>
+<code>raid-vm02</code> (DomU): database (MySQL), private ip (192.168.122.81), accessed to MySQL port from
+<code>raid-vm01</code>. Public access only to the ssh port <code>22002</code>.</li>
+</ul><h2>Extras</h2>
+
+<p>Extra issues to increase score:</p>
+
+<ul>
+<li>+2 points: Firewall in <strong>Dom0</strong> to filter/forward packets from outside the network, and it will allow virtual machines to access outside. The firewall has to allow connections to the ports <code>80</code>, <code>22001</code> and <code>22002</code>, forwarding the web requests to the virtual machine with a web server (<code>raid-vm01</code>). The firewall will also forward the ssh connections to both virtual machines (via <code>22001</code> and <code>22002</code> ports).</li>
+<li>
+<p>+1 point: Virtual Machines will have to mount <code>LVM filesystems</code>. So different volumes (LVMs) for different VM mountpoints:</p>
+
+<ul>
+<li>
+<code>/var/www</code> volume mounted in <code>raid-vm01</code>.</li>
+<li>
+<code>/var/lib/mysql</code> volume mounted in <code>raid-vm02</code>.</li>
+</ul>
+</li>
+<li><p>+1 point: Using <code>RAID 1</code>: LVM mounted with two (or more) physical hard disks (for instance two USB flash drives).</p></li>
+<li><p>+0.5 point: <code>HTTPS support</code> in web server (<code>raid-vm01</code>).</p></li>
+</ul><h1>Documentation</h1>
+
+<p>Create a wiki with all documentation extracted from <code>final_practice</code> folder in repostiory:</p>
+
+<pre lang="shell"><code>final_practice/
+├── 001-logical-disc-layer.rst
+├── 002-virtualizacion.rst
+├── fstab.rst
+├── iptables.rst
+├── secure-apache-ssl.rst
+├── storage-devices.rst
+└── wordpress-mysql-server.rst
+</code></pre>
+
+<p>Wiki <a href="https://github.com/ricardogarfe/mswl-systems-integration/wiki">Systems Integration Documentation</a>.</p>
+
+<h1>License</h1>
+
+<p><a href="http://creativecommons.org/licenses/by/3.0/" rel="Creative Commons Attribution 3.0"><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" alt="Foo"></a></p>
+
+<p>This work by Ricardo Gracía Fernández - ricardogarfe [at] gmail [dot] com is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
