@@ -1,3 +1,7 @@
+=========
+IPTables
+=========
+
 Port Forwarding
 ================
 
@@ -8,7 +12,7 @@ ip:
     * iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 22002 -j DNAT --to-destination 192.168.122.81:22
     * iptables -I FORWARD -m state -d 192.168.122.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
 
-Test 443:
+443:
 
     * iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 443 -j DNAT --to-destination 192.168.122.80:443
 

@@ -105,9 +105,9 @@ You can either set this up as a new connection or override the default, in this 
 comment bind-address definition in /etc/mysql/my.cnf
 
 [mysqld]
-bind-address    = 192.168.122.81
+# bind-address  = 192.168.122.81
 port            = 3306
-user		= mysql
+user		    = mysql
 pid-file        = /var/run/mysqld/mysqld.pid
 socket          = /var/run/mysqld/mysqld.sock
 basedir         = /usr
@@ -140,11 +140,10 @@ Now that our user has been granted access from any host, all thats left is to ma
     /sbin/iptables -A INPUT -i eth0 -p tcp --destination-port 3306 -j ACCEPT
     And now we should be able to login to our server from our local machine:
 
-    mysql -h255.112.324.12 -uroot -pMyPASSWORD
+    mysql -h192.168.122.81 -u root -padmin
 
 http://blog.vinhkhoa.com/article/Set-up-a-Railo-Apache-MySQL-host-on-Ubuntu-Part-2-install-MySQL-and-enable-remote-access
 http://endpoint.co/technology/enable-remote-access-mysql
-
 
 IP
 ===
@@ -155,7 +154,7 @@ Configurar el dominio de nombres en el ordenador para que acceda a através de l
 
 Añadir la línea de conversión entre IP y nombre:
 
-    192.168.122.81 system-integration.ricardogarfe.org
+    192.168.122.80 system-integration.ricardogarfe.org
 
 Acceder a la dirección de wordpress:
 

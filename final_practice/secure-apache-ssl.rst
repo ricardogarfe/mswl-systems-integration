@@ -21,8 +21,7 @@ Step Three—Create a Self Signed SSL Certificate
 
 When we request a new certificate, we can specify how long the certificate should remain valid by changing the 365 to the number of days we prefer. As it stands this certificate will expire after one year.
 
-    mkdir /etc/apache2/ssl/
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
 
 With this command, we will be both creating the self-signed SSL certificate and the server key that protects it, and placing both of them into the new directory.
 
@@ -50,7 +49,7 @@ Step Four—Set Up the Certificate
 Now we have all of the required components of the finished certificate.The next thing to do is to set up the virtual hosts to display the new certificate. 
 
 Open up the SSL config file:
-sudo nano /etc/apache2/sites-available/default
+sudo pico /etc/apache2/sites-available/default
 
 You should make the following changes.
 
@@ -95,12 +94,12 @@ Step Five—Activate the New Virtual Host
 
 Before the website that will come on the 443 port can be activated, we need to enable that Virtual Host:
 
-sudo a2ensite default
+    sudo a2ensite default-ssl
 
 You are all set. Restarting your Apache server will reload it with all of your changes in place.
 sudo service apache2 reload
 
-In your browser, type https://youraddress, and you will be able to see the new certificate. 
+    In your browser, type https://youraddress, and you will be able to see the new certificate. 
 
 See More
 Once you have setup your SSL certificate on the site, you can Install an FTP server if you haven't done so yet.
