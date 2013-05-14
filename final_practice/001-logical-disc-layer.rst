@@ -83,7 +83,7 @@ Montar el disco RAID:
 Pruebas
 --------
 
-Quitar un USB y ejecutar 'mdadm --detail /dev/md0':
+Quitar un USB y ejecutar 'mdadm --detail /dev/md1':
 
     Number   Major   Minor   RaidDevice State
        0       8       16        0      active sync   /dev/sdb
@@ -92,7 +92,7 @@ Quitar un USB y ejecutar 'mdadm --detail /dev/md0':
 Pinchar el USB y reconstruir:
 
     * comprobar el disco: **ls /dev/sd**
-    * Añadir al md0: **mdadm /dev/md0 --add /dev/sdc1**.
+    * Añadir al md1: **mdadm /dev/md1 --add /dev/sdc1**.
 
 Montar/Desmontar array
 -----------------------
@@ -100,8 +100,8 @@ Montar/Desmontar array
 Desmontar el RAID:
 
     * umount /mnt/raidmd1/
-    * mdadm --stop /dev/md0
-    * ó: mdadm -S /dev/md0 
+    * mdadm --stop /dev/md1
+    * ó: mdadm -S /dev/md1
 
 Montar el RAID:
 
@@ -132,7 +132,7 @@ Montar el RAID:
        Device Role : Active device 1
        Array State : AA ('A' == active, '.' == missing)
 
-    root@ricardo-ubuntu:/mnt# mdadm /dev/md1 --assemble -u 64c4c398:5049ec1c:44cdd2a5:ea380e6f
+    root@ricardo-ubuntu:/mnt# mdadm /dev/md1 --assemble -u 414cf565-4aa4-4148-a12a-c79b02ed332f
     mdadm: /dev/md1 has been started with 2 drives.
 
 Escribir en la tabla

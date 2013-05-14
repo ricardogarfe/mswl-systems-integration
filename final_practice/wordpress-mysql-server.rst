@@ -1,42 +1,44 @@
 IP configuration
 =================
 
-inet addr:192.168.122.100 Bcast:192.168.122.255 Mask:255.255.255.0
+inet addr:192.168.122.80 Bcast:192.168.122.255 Mask:255.255.255.0
 
-sudo vi /etc/network/interfaces
+sudo pico /etc/network/interfaces
+
+configurar DNS, añadir la línea **nameserver 192.168.122.1** con la ip del host en el fichero **/etc/resolvconf/resolv.conf.d/base**
 
 Apache ws01
 ------------
 
-ifconfig eth0 192.168.122.100 netmask 255.255.255.0 broadcast 192.168.122.255
+ifconfig eth0 192.168.122.80 netmask 255.255.255.0 broadcast 192.168.122.255
 
 auto eth0
 iface eth0 inet static
-address 192.168.122.100
-netmask 255.255.255.0
-broadcast 192.168.122.255
-gateway 192.168.122.1
+    address 192.168.122.80
+    netmask 255.255.255.0
+    broadcast 192.168.122.255
+    gateway 192.168.122.1
 
 service networking restart
 
 Mysql db01
 -----------
 
-ifconfig eth0 192.168.122.101 netmask 255.255.255.0 broadcast 192.168.122.255
+ifconfig eth0 192.168.122.81 netmask 255.255.255.0 broadcast 192.168.122.255
 
 auto eth0
 iface eth0 inet static
-address 192.168.122.101
-netmask 255.255.255.0
-broadcast 192.168.122.255
-gateway 192.168.122.1
+    address 192.168.122.81
+    netmask 255.255.255.0
+    broadcast 192.168.122.255
+    gateway 192.168.122.1
 
 service networking restart
 
 Wordpress
 ==========
 
-ssh apachevm01@192.168.122.215
+ssh vm01@192.168.122.80
 
 Instalar wordpress en un servidor ubuntu 12.04 - Dinux 7 con apache y mysql
 1.- Instalamos apache2, mysql y php. 
@@ -75,7 +77,7 @@ http://localhost/wordpress/
 BBDD
 =====
 
-ssh mysqlvm02@192.168.122.101
+ssh vm02@192.168.122.81
 
 En el terminal escribimos `mysql -u root -padmin` nos pedirá una contraseña y escribimos la contraseña que le asignamos al instalar mysql-server-5.1. Una vez dentro de mysql escribimos
 
@@ -91,7 +93,7 @@ luego le asignaremos una contraseña este usuario, para esto escribimos:
 
 Luego le damos privilegios a este usuario con:
 
-    GRANT ALL PRIVILEGES ON wordpress.* TO wordpressuser@'%' IDENTIFIED BY ‘admin’;
+    GRANT ALL PRIVILEGES ON wordpress.* TO wordpressuser@'%' IDENTIFIED BY 'admin';
 
 MYSQL-SERVER
 =============
@@ -103,7 +105,7 @@ You can either set this up as a new connection or override the default, in this 
 comment bind-address definition in /etc/mysql/my.cnf
 
 [mysqld]
-bind-address    = 255.112.324.12
+bind-address    = 192.168.122.81
 port            = 3306
 user		= mysql
 pid-file        = /var/run/mysqld/mysqld.pid
@@ -130,7 +132,7 @@ Now we’ve created our remote config for MySQL, we have to grant access to this
     mysql -uroot -padmin
     CREATE DATABASE mydb;
     # Grant permission to root from any host:
-    GRANT ALL ON mydb.* TO root@'%' IDENTIFIED BY 'admin';
+    GRANT ALL ON *.* TO root@'%' IDENTIFIED BY 'admin';
     Open Up MySQL Remote Ports
 
 Now that our user has been granted access from any host, all thats left is to make sure our OS will allow connections to the default MySQL port
@@ -153,7 +155,7 @@ Configurar el dominio de nombres en el ordenador para que acceda a através de l
 
 Añadir la línea de conversión entre IP y nombre:
 
-    192.168.122.100 system-integration.ricardogarfe.org
+    192.168.122.81 system-integration.ricardogarfe.org
 
 Acceder a la dirección de wordpress:
 

@@ -9,16 +9,22 @@ Crear el pool dentro de la consola de `virsh`:
 
     virsh # pool-define-as --name ws01-install --type dir --target /var/lib/libvirt/final-raid/ws01-install/
     virsh # pool-define-as --name db01-install --type dir --target /var/lib/libvirt/final-raid/db01-install/
+    virsh # pool-define-as --name ws01-www --type dir --target /var/lib/libvirt/final-raid/ws01-www/
+    virsh # pool-define-as --name db01-mysql --type dir --target /var/lib/libvirt/final-raid/db01-mysql/
 
 Arrancar el pool:
 
     virsh # pool-start ws01-install
     virsh # pool-start db01-install
+    virsh # pool-start ws01-www
+    virsh # pool-start db01-mysql
 
 Volúmenes, crear el volúmen vm01.img (vol-create siempre persistente) para la máquina virtual:
 
-    virsh # vol-create-as --pool ws01-install --name vm01.img --capacity 2000M --allocation 2000M --format raw
-    virsh # vol-create-as --pool db01-install --name vm02.img --capacity 2000M --allocation 2000M --format raw
+    virsh # vol-create-as --pool ws01-install --name vm01.img --capacity 2200M --allocation 2200M --format raw
+    virsh # vol-create-as --pool db01-install --name vm02.img --capacity 2200M --allocation 2200M --format raw
+    virsh # vol-create-as --pool ws01-www --name vm01www.img --capacity 150M --allocation 150M --format raw
+    virsh # vol-create-as --pool db01-mysql --name vm02mysql.img --capacity 150M --allocation 150M --format raw
 
 Mostrar la configuración xml del volúmen del pool:
 
@@ -83,8 +89,6 @@ Definir la red nat:
 Definir la Máquina virst-install
 ---------------------------------
 
-FreeBSD-9.1-RELEASE-amd64-disc1.iso
-
 Funciona correctamente sin errores con el comando:
 
     # virt-install --connect qemu:///system -n raid-vm01 -r 1024 --vcpus=1 --disk path=/var/lib/libvirt/final-raid/ws01-install/vm01.img -c /var/lib/libvirt/images/ubuntu-12.10-server-amd64.iso --vnc --noautoconsole --os-type linux --os-variant ubuntuprecise --accelerate -v --network network:nat --hvm --force
@@ -110,11 +114,71 @@ A través de virsh y una configuración xml:
     
     virsh # attach-device vm01 disk.xml
 
-Dispositivo externo:
+Como Dispositivo externo después de haber creado las imágenes.
 
-    virsh # attach-disk vm01 /var/lib/libvirt/mydata/vm01-data.img --target vdb --config
+# Parar las máquinas virtuales:
 
-Definir en fstab para que se inicialice automáticamente.
+    virsh # shutdown raid-vm01
+    virsh # shutdown raid-vm02
+
+# Adjuntar el nuevo disco:
+
+    virsh # attach-disk raid-vm01 /var/lib/libvirt/final-raid/ws01-www/vm01www.img --target vdb --persistent
+
+    virsh # attach-disk raid-vm02 /var/lib/libvirt/final-raid/db01-mysql/vm02mysql.img --target vdb --persistent
+
+# Levantar las máquinas virtuales:
+
+    virsh # start raid-vm01
+    virsh # start raid-vm02
+
+# Ejecutar el comando **fdisk -l** para comprobar que se ha iniciado correctamente:
+
+    Disco /dev/vda: 2306 MB, 2306867200 bytes
+    16 cabezas, 63 sectores/pista, 4469 cilindros, 4505600 sectores en total
+    Unidades = sectores de 1 * 512 = 512 bytes
+    Tamaño de sector (lógico / físico): 512 bytes / 512 bytes
+    Tamaño E/S (mínimo/óptimo): 512 bytes / 512 bytes
+    Identificador del disco: 0x00005919
+
+    Dispositivo Inicio    Comienzo      Fin      Bloques  Id  Sistema
+    /dev/vda1   *        2048     3905535     1951744   83  Linux
+    /dev/vda2         3907582     4503551      297985    5  Extendida
+    /dev/vda5         3907584     4503551      297984   82  Linux swap / Solaris
+
+    Disco /dev/vdb: 157 MB, 157286400 bytes
+    16 cabezas, 63 sectores/pista, 304 cilindros, 307200 sectores en total
+    Unidades = sectores de 1 * 512 = 512 bytes
+    Tamaño de sector (lógico / físico): 512 bytes / 512 bytes
+    Tamaño E/S (mínimo/óptimo): 512 bytes / 512 bytes
+    Identificador del disco: 0x00000000
+
+    El disco /dev/vdb no contiene una tabla de particiones válida
+
+# Dar formato al disco:
+
+    # fdisk /dev/vdb
+    
+        # configure new partition using 'n' option and 't' to define linux type '83'. And **w**.
+    # mkfs.ext4 /dev/vdb1
+    
+# Montar el dispositivo:
+
+    # mount /dev/vdb1 /var/www
+
+# Definir en fstab para que se inicialice automáticamente mediante UUID con el comando **blkid**:
+
+    root@ubuntuvm01:/home/vm01# blkid
+    /dev/vda1: UUID="472e4de5-4e12-42e3-85b9-c815f5ceb8d0" TYPE="ext4" 
+    /dev/vda5: UUID="65144bfe-9651-48f7-8ebb-6d8e3894ef37" TYPE="swap" 
+    /dev/vdb1: UUID="62eb7abe-cd39-4150-8db2-4a12f7f6e74d" TYPE="ext4" 
+
+# fstab:
+
+    UUID=472e4de5-4e12-42e3-85b9-c815f5ceb8d0 /               ext4    errors=remount-ro 0       1
+    # swap was on /dev/vda5 during installation
+    UUID=65144bfe-9651-48f7-8ebb-6d8e3894ef37 none            swap    sw              0       0
+    UUID=62eb7abe-cd39-4150-8db2-4a12f7f6e74d	/var/www	ext4	defaults	0	0
 
 User/Password
 --------------
