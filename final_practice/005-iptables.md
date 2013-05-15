@@ -2,6 +2,12 @@
 
 ## Port Forwarding
 
+Denegar todas las conexiones a la dirección 192.168.1.39:
+
+```shell
+TODO
+```
+
 Puertos `80` para web en `raid-vm01` y `22001`, `22002` para ssh en `raid-vm01` y `raid-vm02` respectivamente:
 
 ```shell
@@ -20,7 +26,13 @@ iptables -t nat -I PREROUTING -p tcp -d 192.168.1.39 --dport 443 -j DNAT --to-de
 Guardar los cambios:
 
 ```shell
-$ iptables-save
+$ iptables-save > fichero
+```
+
+Cargar las reglas:
+
+```shell
+$ iptables-restore fichero
 ```
 
 No es necesario abrir los puertos en el host:
@@ -29,6 +41,28 @@ No es necesario abrir los puertos en el host:
     Allow connection to ports 22001 and 22002:
     * iptables -A INPUT -i wlan0 -p tcp --dport 22001 -j ACCEPT
     * iptables -A INPUT -i wlan0 -p tcp --dport 22002 -j ACCEPT
+```
+
+## 80
+
+Conexión a través de telnet al puerto 80:
+
+```shell
+telnet 192.168.11.39 80
+```
+
+Mediante curl a wordpress:
+
+```shell
+curl htttp://192.168.1.39/wordpress/
+```
+
+## 443
+
+Comprobar a través de la consola desde el otro dispositivo de la red:
+
+```shell
+$ openssl s_client -connect 192.168.1.39:443 -state -debug
 ```
 
 ### Filtro por interfaz
@@ -92,11 +126,12 @@ $ iptables-save
 
 ## Backup Iptables
 
-Existen dos comandos para hacer esto: iptables-save y iptables-restore. Ambas leen y escriben la entrada y salida estándares. Ejemplos:
+Existen dos comandos para hacer esto: iptables-save y iptables-restore. Ambas leen y escriben la entrada y salida estándares. También se puede crear un script de inicio para cargar los valores seleccionados, ejemplos:
 
 ```shell
-root# iptables-save > iptables.txt  
- 
-root# iptables-restore < iptables.txt
+root# iptables-save > /etc/firewall.conf
+root# echo '#!/bin/sh' > /etc/network/if-up.d/iptables
+root# echo 'iptables-restore < /etc/firewall.conf' >> /etc/network/if-up.d/iptables
+root# chmod +x /etc/network/if-up.d/iptables
 ```
 
