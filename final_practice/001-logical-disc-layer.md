@@ -2,6 +2,19 @@
 
 Este proceso se ha de hacer en modo `sudo`.
 
+## Estructura
+
+Se va a configurar la siguiente estructura a través de un RAID-1 con dos USB:
+
+```shell
+----------------------------------------[md1]----------------------------------------
+---------------------------------[md1p1]--------[md1p2]---------------------------------
+-------------------------[physicalvol1]--------[physicalvol2]-------------------------
+----------------------[groupvol1]--------------------[groupvol2]----------------------
+-----------[lv-install-ws01]--[lv-www]-------[lv-install-db01]--[lv-mysql]------------
+-----------[ws01.img]---------[www.img]------[db01.img]---------[mysql.img]-----------
+```
+
 ## Configurar disco
 
 Iniciar **fdisk** en el nuevo dispositivo USB:
